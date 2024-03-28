@@ -1,67 +1,73 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Qt.labs.settings
-import QtQuick.Dialogs
+//import Qt.labs.settings
+//import QtQuick.Dialogs
 
-import CustomPlot
+//import CustomPlot
+
 ApplicationWindow {
     id: main
-    width: 1400
+    width: 1500
     height: 800
     visible: true
     title: qsTr("MHgrph")
     Material.theme: Material.Dark
     Material.accent: Material.Indigo
-
-    GridLayout {
+    ObjectModel{
+        id: mainContainer
+    }
+    SplitView {
         id: grid
         anchors.fill: parent
-        columnSpacing: 1
-        flow: GridLayout.LeftToRight
-        columns: 2
+        //columnSpacing: 1
+        //flow: GridLayout.LeftToRight
+        //columns: 2
         Item {
-            width: 700
-            height: parent.height
-            DataWindow{
+            implicitWidth:  800
+            SplitView.minimumWidth: 700
+            // width: 700
+            // height: parent.height
+            Graphs{
             }
         }
         Item {
-            width: 600
-            height: 400
-            CustomPlotItem {
-                id: customPlot
-                width: parent.width;  height: parent.height // resize
-                Component.onCompleted: initCustomPlot(0)
-                Component.onDestruction: testJSString(0)
-                function testJSString(num) {
-                    var text = "I have been destroyed_ %1"
-                    console.log(text.arg(num))
+            SplitView.minimumWidth: 600
+            SplitView.preferredWidth: 650
+            TabBar{
+                id: barMain
+                width: parent.width
+                anchors.top: parent.top
+                anchors.left: parent.left
+                Repeater{
+                    id: barMainRepeater
+                    model: ["Output", "Settings"]
+                    TabButton{
+                        text: modelData
+                        width: Math.max(120, barMain.width/2)
+                    }
                 }
             }
-            // Connections {
-            //     target: dataView.model    // EDIT: I drew the wrong conclusions here, see text below!
-            //     function onDataChanged() {
-            //         customPlot.backendData(model.x, model.y)
-            //         //gRAMsMnemoForm.setVal(model.cv, model.index) // it's Working
-            //     }
-            // }
-            Connections {
-                target: backend 
-                onPointsChanged: {
-                    customPlot.backendData(x, y)
-                }
-            }
-        }
-        // Loader {
-        //     id: myLoader
-        //     source: "qrc:/MHgrph/dataWindow.qml"
-        // }
+            StackLayout{
+                id: layoutMain
+                anchors.top: barMain.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                currentIndex:  barMain.currentIndex
+                Item{
+                    DataWindow{
 
-        // Connections {
-        //     target: myLoader.item
-        //     function onMessage(msg) { console.log(msg) }
-        // }
+                    }
+                }
+                Item{
+                    SettingsDialog{
+                        id: flowDialog
+                        c_name: "flow"
+                    }
+                }
+            }
+        }
     }
 
 }

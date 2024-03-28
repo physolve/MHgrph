@@ -3,7 +3,7 @@
 #include <QDebug>
 
 CustomPlotItem::CustomPlotItem(QQuickItem *parent)
-    : QQuickPaintedItem(parent), m_CustomPlot(nullptr), m_timerId(0), testTimer(0) {
+    : QQuickPaintedItem(parent), m_CustomPlot(nullptr), m_timerId(0), testTimer(0), rescalingON(true) {
   setFlag(QQuickItem::ItemHasContents, true);
   setAcceptedMouseButtons(Qt::AllButtons);
 
@@ -31,18 +31,21 @@ void CustomPlotItem::initCustomPlot(int index) {
     m_CustomPlot = new QCustomPlot();
 
     connect( m_CustomPlot, &QCustomPlot::destroyed, this, [=](){ qDebug() << QString(" QCustomPlot (%1) pointer is destroyed ").arg(index); });
-
     updateCustomPlotSize();
+    
+    m_CustomPlot->setOpenGl(true); // it's not working without some fckn include
+
     m_CustomPlot->addGraph();
     m_CustomPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black, 1.5), QBrush(Qt::white), 9));
     m_CustomPlot->graph(0)->setPen(QPen(QColor(120, 120, 120), 2));
+    m_CustomPlot->graph(0)->setAdaptiveSampling(true);
     //m_CustomPlot->addGraph();
     //m_CustomPlot->graph(1)->setPen(QPen(Qt::black));
-
 
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     timeTicker->setTimeFormat("%h:%m:%s");
     m_CustomPlot->xAxis->setTicker(timeTicker);
+    m_CustomPlot->yAxis->setRange(0.0, 1.0);
     m_CustomPlot->axisRect()->setupFullAxesBox(); //?
     m_CustomPlot->yAxis->setRange(0.0, 1.0);
 
@@ -94,9 +97,6 @@ void CustomPlotItem::initCustomPlot(int index) {
     axisRectGradient.setColorAt(0, QColor(80, 80, 80));
     axisRectGradient.setColorAt(1, QColor(30, 30, 30));
     m_CustomPlot->axisRect()->setBackground(axisRectGradient);
-
-
-
   }
   m_CustomPlot->replot();
 }
@@ -113,52 +113,55 @@ void CustomPlotItem::paint(QPainter *painter) {
 }
 
 void CustomPlotItem::mousePressEvent(QMouseEvent *event) {
-  qDebug() << Q_FUNC_INFO;
+  //qDebug() << Q_FUNC_INFO;
   routeMouseEvents(event);
 }
 
 void CustomPlotItem::mouseReleaseEvent(QMouseEvent *event) {
-  qDebug() << Q_FUNC_INFO;
+  //qDebug() << Q_FUNC_INFO;
   routeMouseEvents(event);
+  //QQuickPaintedItem::mouseReleaseEvent(event);
 }
 
 void CustomPlotItem::mouseMoveEvent(QMouseEvent *event) {
+  rescalingON = false;
   routeMouseEvents(event);
 }
 
 void CustomPlotItem::mouseDoubleClickEvent(QMouseEvent *event) {
   qDebug() << Q_FUNC_INFO;
+  rescalingON = true;
   routeMouseEvents(event);
 }
 
-void CustomPlotItem::wheelEvent(QWheelEvent *event) { routeWheelEvents(event); }
-
-void CustomPlotItem::timerEvent(QTimerEvent * /*event*/) { // delete 
-  static double t, U, V;
-  U = ((double)rand() / RAND_MAX) * 5;
-  m_CustomPlot->graph(0)->addData(t, U);
-  V = ((double)rand() / RAND_MAX) * 5;
-  m_CustomPlot->graph(1)->addData(t, V);
-  //qDebug() << Q_FUNC_INFO << QString("Adding dot t = %1, S = %2").arg(t).arg(U);
-  t++;
-  m_CustomPlot->replot();
+void CustomPlotItem::wheelEvent(QWheelEvent *event) { 
+  rescalingON = false;
+  routeWheelEvents(event); 
 }
 
 void CustomPlotItem::backendData(QList<double> x, QList<double> y){
   static double lastPointKey = 0;
   m_CustomPlot->graph(0)->setData(x, y);
   lastPointKey = x.last();
-  m_CustomPlot->xAxis->setRange(lastPointKey, 10, Qt::AlignRight); // means there a 10 sec
-  m_CustomPlot->yAxis->rescale();
+  if(rescalingON){
+    m_CustomPlot->xAxis->setRange(lastPointKey, 10, Qt::AlignRight); // means there a 10 sec
+    m_CustomPlot->yAxis->rescale();
+    m_CustomPlot->yAxis->scaleRange(1.1);
+  }
+  m_CustomPlot->replot();
+  //m_CustomPlot->rescaleAxes();
   //m_CustomPlot->yAxis->scaleRange(1.05, m_CustomPlot->yAxis->range().center());
   //m_CustomPlot->graph(0)->rescaleValueAxis(false);
   //m_CustomPlot->yAxis->scaleRange(1.1, m_CustomPlot->yAxis->range().center());
-  m_CustomPlot->replot();
 }
 
 void CustomPlotItem::graphClicked(QCPAbstractPlottable *plottable) {
   qDebug() << Q_FUNC_INFO
            << QString("Clicked on graph '%1 ").arg(plottable->name());
+}
+
+void CustomPlotItem::resetPos(){
+  rescalingON = true;
 }
 
 void CustomPlotItem::routeMouseEvents(QMouseEvent *event) {
