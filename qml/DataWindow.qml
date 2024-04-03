@@ -6,43 +6,63 @@ Item{
     anchors.fill: parent
     ColumnLayout{
         anchors.centerIn: parent
+        spacing: 30
         GridLayout{
             columns: 2
+            columnSpacing: 10
             Layout.fillWidth: true
             Label{
                 text: qsTr("Type reading:")
-                //font.pointSize: 14
+                font.pointSize: 12
             }
             ComboBox{
                 id: typeCombo
                 //Layout.fillWidth: true
-                model: ["Temperature", "Flow"]
+                model: ["Temperature", "Flow", "Custom"]
                 currentIndex: 1
             }
             Label{
                 text: qsTr("Sending adress")
-                //font.pointSize: 14
+                font.pointSize: 12
             }
             TextField {
                 id: readAddress
                 text: "1"
                 //font.pointSize: 12
-                color: "white"
+                color: enabled ? "white" : "gray"
                 selectByMouse: true
                 cursorVisible: true
+                enabled: typeCombo.currentText === "Custom"
                 //onEditingFinished: backend.startAddress = parseInt(readAddress.text)
             }
             Label{
                 text: qsTr("Number of values:")
+                font.pointSize: 12
             }
             TextField {
                 id: readSize
                 text: "10"
                 //font.pointSize: 12
-                color: "white"
+                color: enabled ? "white" : "gray"
                 selectByMouse: true
                 cursorVisible: true
+                enabled: typeCombo.currentText === "Custom"
                 //onEditingFinished: backend.readSize = parseInt(readSize.text)
+            }
+            Button{
+                text: "Set custom type"
+                font.pointSize: 12
+                font.capitalization: Font.MixedCase
+                enabled: typeCombo.currentText === "Custom"
+                onClicked: {
+                    if(flowBack == "undefined"){
+                        console.log("No flow connected (DataWindow)")
+                        return
+                    }
+                    flowBack.currentType = typeCombo.currentText
+                    flowBack.customAdress = parseInt(readAddress.text)
+                    flowBack.customSize = parseInt(readSize.text)
+                }
             }
         }
         // ListView {

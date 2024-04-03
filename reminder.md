@@ -10,4 +10,5 @@
 - [] Он знает про COM11 из m_serialPortList[c_name].toStringList().first();
 - [] Свяжи infoUpdate
 - [] Even Parity как 0, 2, 3, 4 (>0 +1)
-
+- [] Вылетает если переключить read два раза
+- [] Сделать в qml переключение готового modbusVariableMap на кастомный 

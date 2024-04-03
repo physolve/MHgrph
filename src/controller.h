@@ -30,14 +30,16 @@ struct ModbusVariable{
 class Controller : public QObject
 {
     Q_OBJECT
-
+    Q_PROPERTY(QString currentType MEMBER m_currentType)
+    Q_PROPERTY(int customAdress MEMBER m_customAdress)
+    Q_PROPERTY(int customSize MEMBER m_customSize)
 public:
     Controller(const SettingsDialog::Settings &settings, QObject *parent = nullptr);
     ~Controller();
     void setSettings(const SettingsDialog::Settings &settings);
     void initController();
     void connectFlow();
-    void requestFlow(const QString &type);
+    void requestFlow(const ModbusVariable &modbusVariable);
     void startReading();
     void stopReading();
     double getLastChanged();
@@ -56,6 +58,10 @@ private:
 
     QTimer* m_timer;
     QString logText;
+
+    QString m_currentType;
+    int m_customAdress;
+    int m_customSize;
 
     QModbusDataUnit readRequest(int adress, int size) const;
     QModbusDataUnit writeRequest() const;

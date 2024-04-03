@@ -114,6 +114,7 @@ Item{
             }
             Component.onCompleted: {
                 if(flowBack == "undefined"){
+                    console.log("No flow connected (Graph)")
                     return
                 }
                 let flow = plotFlow.createObject()

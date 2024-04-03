@@ -87,17 +87,21 @@ void Controller::stopReading(){
 }
 
 void Controller::processEvents(){
-    QString currentType = "flow";
-    requestFlow(currentType);
+
+    if(modbusVariableMap.contains(m_currentType)){
+        requestFlow(modbusVariableMap[m_currentType]);
+    }
+    else{
+        auto customType = ModbusVariable{m_customAdress, m_customSize};
+        requestFlow(customType);
+    } 
 }
 
-void Controller::requestFlow(const QString &type){
+void Controller::requestFlow(const ModbusVariable &modbusVariable){
     if (!modbusDevice)
         return;
     //m_readValue.clear(); clear buffer
     setLogText(""); // log
-
-    auto modbusVariable = modbusVariableMap[type];
 
     if (auto *reply = modbusDevice->sendReadRequest(
         readRequest(modbusVariable.m_startAddress, modbusVariable.m_readSize), 
