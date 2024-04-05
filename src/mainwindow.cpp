@@ -98,6 +98,7 @@ void MainWindow::openSerialPort(){
     if(!m_settings->isPressureConnected()||!m_settings->isVacuumConnected())
         return;
     m_pressure->openSerialPort();
+    //rewrite two conditions
     m_vacuum->openSerialPort();
 }
 
@@ -105,6 +106,7 @@ void MainWindow::closeSerialPort(){
     if(!m_settings->isPressureConnected()||!m_settings->isVacuumConnected())
         return;
     m_pressure->closeSerialPort();
+    //rewrite two conditions
     m_vacuum->closeSerialPort();
 }
 

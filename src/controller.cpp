@@ -120,6 +120,7 @@ void PressureController::readData(){
     const QByteArray data = m_serial->readAll();
     //data format "+00.000\r"
     QString responce = QString::fromLocal8Bit(data);
+    qDebug() << responce;
     responce.remove(0,1);
     responce.chop(1);
     bool ok = true;
