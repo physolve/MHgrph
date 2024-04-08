@@ -4,215 +4,144 @@ import QtQuick.Controls
 import QtQml.Models
 import QtQuick.Layouts
 
-Item {
-    id: dialog
-    
-    //title: qsTr("Settings")
-    
-    //flags: Qt.Dialog
-    
-    //modality: Qt.WindowModal
-    //Material.theme: Material.Dark
-    //Material.accent: Material.Indigo
-    //color: "#303030"
-    //color: active ? palette.active.window : palette.inactive.window 
-    //palette.active.window: "peachpuff"
-    //palette.windowText: "brown"
-    width: 500
-    //height: 500
-    required property string c_name
-
-    Component.onCompleted:{
-        let serialPortInfo = settingsDialog.serialPortList[c_name]
-        if(serialPortInfo === undefined) {
-            return;
+Rectangle {
+    id: customBack
+    implicitWidth: 250
+    implicitHeight: 300
+    color: "transparent"
+    border.color : "steelblue" 
+    border.width : 8
+    property string text: "Flow meter"
+    property string innerName: "" 
+    property string innerProfile: "" 
+    property string innerPurpose: ""
+    property int channelCount: 8
+    property int startChannel: 1
+    property var valueRange: ""
+    property int defaultType: 5
+    Column{
+        Text{
+            id: customBackText
+            //anchors.fill: parent
+            font.pixelSize: 16
+            text: customBack.text
+            anchors.horizontalCenter: parent.horizontalCenter
+            //wrapMode: Text.WordWrap
+            //verticalAlignment: Text.AlignVCenter
         }
-        descriptionLabel.text = "Description: " + serialPortInfo[1]
-        manufacturerLabel.text = "Manufacturer: " + serialPortInfo[2]
-        serialNumberLabel.text = "Serial number: " + serialPortInfo[3]
-        locationLabel.text = "Location: " + serialPortInfo[4]
-        vidLabel.text = "Vendor Identifier: " + serialPortInfo[5]
-        pidLabel.text = "Product Identifier: " + serialPortInfo[6]
-    }
-    // CHECK if current Values from settings is set up
-    RowLayout{
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.margins: 10
-        spacing: 15
-        ColumnLayout{
-            Layout.fillWidth: true
-            // ComboBox{
-            //     id: serialPorntInfoCmb
-            //     Layout.fillWidth: true
-            //     model: Object.keys(settingsDialog.serialPortList)
-            //     Component.onCompleted: {
-            //         currentIndex = count - 1
-            //         showPortInfo(currentText)
-            //     }
-            //     onActivated: {
-            //         showPortInfo(currentText)
-            //     }
-            // }
-            Label{
-                id: nameLabel
-                text: c_name
-            }
-            Label{
-                id: descriptionLabel
-                text: "Description: "
-                Layout.preferredWidth: dialog.width/2
-                elide: Text.ElideRight
-            }
-            Label{
-                id: manufacturerLabel
-                text: "Manufacturer: "
-            }
-            Label{
-                id: serialNumberLabel
-                text: "Serial number: "
-            }
-            Label{
-                id: locationLabel
-                text: "Location: "
-            }
-            Label{
-                id: vidLabel
-                text: "Vendor ID: "
-            }
-            Label{
-                id: pidLabel
-                text: "Product ID: "
-            }
+        Text{
+            id: deviceNameLbl
+            //anchors.fill: parent
+            font.pixelSize: 16
+            text: customBack.innerName
+            anchors.horizontalCenter: parent.horizontalCenter
+            wrapMode: Text.WordWrap
+            //verticalAlignment: Text.AlignVCenter
         }
-        GridLayout{
-            columns: 2
-            Layout.fillWidth: true
-            Label{
-                text: qsTr("Parity:")
+        Text{
+            id: deviceProfileLbl
+            //anchors.fill: parent
+            width: 120
+            font.pixelSize: 16
+            text: customBack.innerProfile
+            anchors.horizontalCenter: parent.horizontalCenter
+            elide: Text.ElideRight
+            //wrapMode: Text.WordWrap
+            //verticalAlignment: Text.AlignVCenter
+        }
+        ComboBox{
+            id: cmbChannelStart
+            width: 100
+            height: 40
+            font.pointSize: 10
+            anchors.horizontalCenter: parent.horizontalCenter
+            model: customBack.channelCount 
+        }
+        ComboBox{
+            id: cmbChannelCount
+            width: 100
+            height: 40
+            font.pointSize: 10
+            anchors.horizontalCenter: parent.horizontalCenter
+            //currentIndex: customBack.channelCount-1 
+            model: customBack.channelCount
+            delegate: ItemDelegate {
+                width: parent.width
+                text: index + 1
             }
-            ComboBox{
-                id: parityCombo
-                Layout.fillWidth: true
-                model: ["No", "Skip", "Even", "Odd", "Space", "Mark"]
-                currentIndex: 2
-            }
-            Label{
-                text: qsTr("Baud Rate:")
-            }
-            ComboBox{
-                id: baudCombo
-                Layout.fillWidth: true
-                model: ["1200", "2400", "4800", "9600", 
-                "19200", "38400", "57600", "115200"]
-                currentIndex: 4
-            }
-            Label{
-                text: qsTr("Data Bits:")
-            }
-            ComboBox{
-                id: dataBitsCombo
-                Layout.fillWidth: true
-                valueRole: "value"
-                model: ["5", "6", "7", "8"]
-                currentIndex: 3
-            }
-            Label{
-                text: qsTr("Stop Bits:")
-            }
-            ComboBox{
-                id: stopBitsCombo
-                Layout.fillWidth: true
-                valueRole: "value"
-                model: ["1", "3", "2"] // ?
-                currentIndex: 0
-            }
-            Label{
-                text: qsTr("Port:")
-            }
-            TextField {
-                id: portEdit
-                text: "COM" // rewrite as from serial info
-                color: "white"
-                selectByMouse: true
-                cursorVisible: true
-                //onEditingFinished: backend.portEdit = portEdit.text
-            }
-            Label{
-                text: qsTr("Server Address:")
-            }
-            SpinBox {
-                id: serverEdit
-                editable: true
-                value: 1
-                stepSize: 1
-                from: 1
-                to: 247
-                //onValueModified: backend.serverEdit = serverEdit.value
-            }
-            Label{
-                text: qsTr("Responce time:")
-            }
-            SpinBox {
-                id: timeoutSpinner
-                editable: true
-                value: 1000
-                stepSize: 100
-                //displayText: String(value) + " ms"
-                from: 10
-                to: 5000
-            }
-            Label{
-                text: qsTr("Number of retries:")
-            }
-            SpinBox {
-                id: retriesSpinner
-                value: 3
-                stepSize: 1
-                from: 0
-                to: 99
-            }
-            // Button {
-            //     id: connectBtn
-            //     text: qsTr("Connect")
-            //     font.pointSize: 14
-            //     onClicked: backend.onConnectButtonClicked()
-            //     // apply and connect?
+            displayText: Number(currentText) + 1
+            //onCurrentIndexChanged: if(connected)visualChannelMapping.setChannelList(currentIndex+1)
+        }
+        ComboBox{
+            id: cmbValueRange
+            width: 180
+            height: 50
+            font.pointSize: 10
+            anchors.horizontalCenter: parent.horizontalCenter
+            model: customBack.valueRange
+            // background: Rectangle {
+            //     color: "lightgrey"
+            //     border {width: 1; color: "grey"}
+            //     implicitWidth:  50
+            //     implicitHeight: 30
             // }
-            Button{
-                // anchors.bottom: parent.bottom
-                // anchors.right: parent.right
-                //anchors.margins: 10
-                text: qsTr("Apply")
-                onClicked: {
-                    let result = {}
-                    result["serialPortInfo"] = "empty"//serialPorntInfoCmb.currentText
-                    result["baudRate"] = baudCombo.currentText
-                    result["dataBitsBox"] = dataBitsCombo.currentText
-                    result["parityBox"] = parityCombo.currentIndex
-                    result["stopBitsBox"] = stopBitsCombo.currentText
-
-                    result["portEdit"] = portEdit.text //?
-                    result["serverEdit"] = serverEdit.value
-                    result["responseTime"] = timeoutSpinner.value
-                    result["numberOfRetries"] = retriesSpinner.value
-
-                    settingsDialog.apply(result, c_name)
-                    // connect and apply?
-                    //dialog.close()
-                    backend.onConnectButtonClicked()
+            contentItem: Label {
+                text: cmbValueRange.currentText
+                font: cmbValueRange.font
+                wrapMode: Text.WordWrap
+                padding: 4
+                verticalAlignment: Text.AlignVCenter
+            }
+            popup: Popup {
+                y: cmbValueRange.height - 1
+                width: 200
+                implicitHeight: contentItem.implicitHeight
+                contentItem: ListView {
+                    clip: true
+                    implicitHeight: contentHeight
+                    model: cmbValueRange.popup.visible ? cmbValueRange.delegateModel : null
+                    currentIndex: cmbValueRange.highlightedIndex
                 }
             }
-            Switch {
-                id: startBtn
-                text: qsTr("Start Read")
-                onToggled: backend.onReadButtonClicked(startBtn.checked)
-            }
+            //onCurrentIndexChanged:
         }
-        Item{
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+        Button{
+            id: btn_testRead
+            width: 180
+            height: 50
+            text: qsTr("Test Read")
+            onClicked: {
+                dataSource.testRead()
+            } 
+        }
+        anchors.centerIn: parent
+    }
+    //anchors.centerIn: parent
+    function setSettings(){
+        let rsa = initSource.advantechDeviceMap
+        for(const [key, value] of Object.entries(rsa)){
+            console.log(`I see ${key} and ${value}.`)
+            if(value != "USB-4716")
+                continue
+            customBack.innerName = value+','+key
+            customBack.innerPurpose = "flow"
+            customBack.color = Material.color(Material.Green)
+
+            let settings = initSource.advantechDeviceFill(value+','+key)
+
+            customBack.channelCount = settings.channelCount
+            cmbChannelCount.currentIndex = customBack.startChannel
+            customBack.valueRange = settings.valueRanges
+            cmbValueRange.currentIndex = customBack.defaultType
+            break
         }
     }
-    
+    function getSettings(){
+        return{
+            indexChannelStart:cmbChannelStart.currentIndex,
+            indexChannelCount:cmbChannelCount.currentIndex+1,
+            indexValueRange:cmbValueRange.currentIndex,
+            inProfilePath: innerProfile
+        }
+    }
 }

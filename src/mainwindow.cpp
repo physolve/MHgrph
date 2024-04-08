@@ -10,7 +10,7 @@
 
 
 MainWindow::MainWindow(int &argc, char **argv)
-    : QApplication(argc, argv), m_settings(new SettingsDialog), m_logTimer(new QTimer)
+    : QApplication(argc, argv), initSource(), dataSource(), m_logTimer(new QTimer)
 {
     QQuickStyle::setStyle("Material");
     QString applicationName = "MHgrph";
@@ -27,7 +27,9 @@ MainWindow::MainWindow(int &argc, char **argv)
     qmlRegisterType<CustomPlotItem>("CustomPlot", 1, 0, "CustomPlotItem");
 
     m_engine.rootContext()->setContextProperty("backend", this);
-    m_engine.rootContext()->setContextProperty("settingsDialog", m_settings);
+    m_engine.rootContext()->setContextProperty("initSource", &initSource);
+    m_engine.rootContext()->setContextProperty("dataSource", &dataSource);
+
     setLogText("Click connect");
     
     initController();
@@ -43,47 +45,35 @@ MainWindow::~MainWindow()
 {
     m_logTimer->stop();
     delete m_logTimer;
-    delete m_settings;
+    //delete m_settings;
 }
 
 void MainWindow::initController(){
-    if(m_settings->isFlowMeterConnected()){
-        m_flow = new Controller(m_settings->settings("flow"));
-        connect(m_flow, &Controller::logChanged, this, &MainWindow::setLogText); //link to qml notify
-        m_engine.rootContext()->setContextProperty("flowBack", m_flow);
-    }
-    else{
-        m_engine.rootContext()->setContextProperty("flowBack", "undefined");
-    }
+    
+    //start connection to Advantech here
 }
 
 void MainWindow::onConnectButtonClicked()
 {
-    if(!m_settings->isFlowMeterConnected())
-        return;
-    m_flow->setSettings(m_settings->settings("flow"));
-    m_flow->connectFlow(); // test it!
+    // initialize Advantech using known parameters
 }
 
 
 void MainWindow::onReadButtonClicked(bool s)
 {
-    if(s){
-        m_logTimer->start(1000);
-        m_flow->startReading();
-    }
-    else{
-        m_logTimer->stop();
-        m_flow->stopReading();
-    }
+    // delete
 }
 
 void MainWindow::processEvents(){
     quint64 c_time = m_programTime.elapsed()/1000;
     double c_flow = 0;
-    if(m_settings->isFlowMeterConnected()){
-        c_flow = m_flow->getLastChanged();
-    }
+
+    dataSource.processEvents();
+
+    auto values = dataSource.getMeasures();
+
+    c_flow = values[0];
+    
     QString line = QString("%1\t%2").arg(c_time).arg(c_flow);
     m_writeLog.writeLine(line);
 }

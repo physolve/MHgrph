@@ -62,8 +62,20 @@ ApplicationWindow {
                 }
                 Item{
                     SettingsDialog{
-                        id: flowDialog
-                        c_name: "flow"
+                        id: profileObj
+                    }
+                    function setAdvantechController(){
+                        profileObj.setSettings()
+                    }
+                    function saveAdvantechController(){
+                        let description = profileObj.innerName
+                        let purpose = profileObj.innerPurpose
+                        let settings = profileObj.getSettings()
+                        dataSource.advantechDeviceSetting(description, settings)
+                    }
+                    Component.onCompleted: {
+                        setAdvantechController()
+                        saveAdvantechController()
                     }
                 }
             }

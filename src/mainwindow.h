@@ -5,7 +5,8 @@
 
 #include <QElapsedTimer>
 
-#include "controller.h"
+#include "Initialize.h"
+#include "DataAcquisition.h"
 #include "writelogfile.h"
 
 
@@ -31,8 +32,11 @@ private slots:
 private:
     QQmlApplicationEngine m_engine;
 
-    SettingsDialog *m_settings;
-    Controller *m_flow;
+    Initialize initSource;
+    DataAcquisition dataSource;
+    //SettingsDialog *m_settings;
+    
+    //Controller *m_flow;
     
     QString logText;
 

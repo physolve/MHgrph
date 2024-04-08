@@ -30,10 +30,10 @@ Item{
                 }
                 
             }
-            Connections {
-                target: flowBack  
-                function onPointsChanged(x,y) { customPlotFlow.backendData(x, y) }
-            }
+            // Connections {
+            //     target: flowBack  
+            //     function onPointsChanged(x,y) { customPlotFlow.backendData(x, y) }
+            // }
             
             RoundButton {
                 id: resetPosBtn
@@ -113,12 +113,12 @@ Item{
                 }
             }
             Component.onCompleted: {
-                if(flowBack == "undefined"){
-                    console.log("No flow connected (Graph)")
-                    return
-                }
-                let flow = plotFlow.createObject()
-                baseContainer.append(flow)
+                // if(flowBack == "undefined"){
+                //     console.log("No flow connected (Graph)")
+                //     return
+                // }
+                // let flow = plotFlow.createObject()
+                // baseContainer.append(flow)
             }
         }
     }
