@@ -18,10 +18,9 @@ public:
     explicit MainWindow(int &argc, char **argv);
     ~MainWindow();
 
-    void initController();
     QString getLogText() const;
-
-    Q_INVOKABLE void onConnectButtonClicked();
+    //void initController();
+    //Q_INVOKABLE void onConnectButtonClicked();
     Q_INVOKABLE void onReadButtonClicked(bool s);
 signals:
     void logChanged(QString);
@@ -34,10 +33,6 @@ private:
 
     Initialize initSource;
     DataAcquisition dataSource;
-    //SettingsDialog *m_settings;
-    
-    //Controller *m_flow;
-    
     QString logText;
 
     QTimer* m_logTimer;

@@ -32,8 +32,6 @@ MainWindow::MainWindow(int &argc, char **argv)
 
     setLogText("Click connect");
     
-    initController();
-    
     m_engine.load(url);
 
     connect(m_logTimer, &QTimer::timeout, this, &MainWindow::processEvents);
@@ -48,31 +46,17 @@ MainWindow::~MainWindow()
     //delete m_settings;
 }
 
-void MainWindow::initController(){
-    
-    //start connection to Advantech here
-}
-
-void MainWindow::onConnectButtonClicked()
-{
-    // initialize Advantech using known parameters
-}
-
-
 void MainWindow::onReadButtonClicked(bool s)
 {
-    // delete
+    if(!dataSource.isFlowConnected())
+        return;
+    if(s) dataSource.startReading();
+    else dataSource.stopReading();
 }
 
 void MainWindow::processEvents(){
     quint64 c_time = m_programTime.elapsed()/1000;
-    double c_flow = 0;
-
-    dataSource.processEvents();
-
-    auto values = dataSource.getMeasures();
-
-    c_flow = values[0];
+    double c_flow = dataSource.getLastChanged();
     
     QString line = QString("%1\t%2").arg(c_time).arg(c_flow);
     m_writeLog.writeLine(line);

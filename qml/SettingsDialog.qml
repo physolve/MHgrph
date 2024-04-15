@@ -105,15 +105,12 @@ Rectangle {
             }
             //onCurrentIndexChanged:
         }
-        Button{
-            id: btn_testRead
-            width: 180
-            height: 50
-            text: qsTr("Test Read")
-            onClicked: {
-                dataSource.testRead()
-            } 
+        Switch{
+            id: readingBtn
+            text: qsTr("Start Read")
+            onToggled: backend.onReadButtonClicked(readingBtn.checked)   
         }
+
         anchors.centerIn: parent
     }
     //anchors.centerIn: parent

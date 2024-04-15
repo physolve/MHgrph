@@ -27,13 +27,14 @@ CustomPlotItem::~CustomPlotItem() {
 }
 
 void CustomPlotItem::initCustomPlot(int index) {
-  if(!m_CustomPlot){
+    // if(!m_CustomPlot){
+    // }
     m_CustomPlot = new QCustomPlot();
 
     connect( m_CustomPlot, &QCustomPlot::destroyed, this, [=](){ qDebug() << QString(" QCustomPlot (%1) pointer is destroyed ").arg(index); });
     updateCustomPlotSize();
-    
-    m_CustomPlot->setOpenGl(true); // it's not working without some fckn include
+
+    //m_CustomPlot->setOpenGl(true); // it's not working without some fckn include
 
     m_CustomPlot->addGraph();
     m_CustomPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black, 1.5), QBrush(Qt::white), 9));
@@ -52,7 +53,6 @@ void CustomPlotItem::initCustomPlot(int index) {
     //make left and bottom axes transfer their ranges to right and top axes:
     connect(m_CustomPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), m_CustomPlot->xAxis2, SLOT(setRange(QCPRange))); //?
     connect(m_CustomPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), m_CustomPlot->yAxis2, SLOT(setRange(QCPRange))); //?
-
 
     m_CustomPlot->xAxis->setLabel("Время, с");
     m_CustomPlot->xAxis->setLabelColor(Qt::white);
@@ -97,99 +97,100 @@ void CustomPlotItem::initCustomPlot(int index) {
     axisRectGradient.setColorAt(0, QColor(80, 80, 80));
     axisRectGradient.setColorAt(1, QColor(30, 30, 30));
     m_CustomPlot->axisRect()->setBackground(axisRectGradient);
-  }
-  m_CustomPlot->replot();
+    //}
+    m_CustomPlot->replot();
 }
 
 void CustomPlotItem::paint(QPainter *painter) {
-  if (m_CustomPlot) {
-    QPixmap picture(boundingRect().size().toSize());
-    QCPPainter qcpPainter(&picture);
+    if (m_CustomPlot) {
+        QPixmap picture(boundingRect().size().toSize());
+        QCPPainter qcpPainter(&picture);
 
-    m_CustomPlot->toPainter(&qcpPainter);
+        m_CustomPlot->toPainter(&qcpPainter);
 
-    painter->drawPixmap(QPoint(), picture);
-  }
+        painter->drawPixmap(QPoint(), picture);
+    }
 }
 
 void CustomPlotItem::mousePressEvent(QMouseEvent *event) {
-  //qDebug() << Q_FUNC_INFO;
-  routeMouseEvents(event);
+    //qDebug() << Q_FUNC_INFO;
+    routeMouseEvents(event);
 }
 
 void CustomPlotItem::mouseReleaseEvent(QMouseEvent *event) {
-  //qDebug() << Q_FUNC_INFO;
-  routeMouseEvents(event);
-  //QQuickPaintedItem::mouseReleaseEvent(event);
+    //qDebug() << Q_FUNC_INFO;
+    routeMouseEvents(event);
+    //QQuickPaintedItem::mouseReleaseEvent(event);
 }
 
 void CustomPlotItem::mouseMoveEvent(QMouseEvent *event) {
-  rescalingON = false;
-  routeMouseEvents(event);
+    rescalingON = false;
+    routeMouseEvents(event);
 }
 
 void CustomPlotItem::mouseDoubleClickEvent(QMouseEvent *event) {
-  qDebug() << Q_FUNC_INFO;
-  rescalingON = true;
-  routeMouseEvents(event);
+    qDebug() << Q_FUNC_INFO;
+    rescalingON = true;
+    routeMouseEvents(event);
 }
 
 void CustomPlotItem::wheelEvent(QWheelEvent *event) { 
-  rescalingON = false;
-  routeWheelEvents(event); 
+    rescalingON = false;
+    routeWheelEvents(event); 
 }
 
 void CustomPlotItem::backendData(QList<double> x, QList<double> y){
-  static double lastPointKey = 0;
-  m_CustomPlot->graph(0)->setData(x, y);
-  lastPointKey = x.last();
-  if(rescalingON){
-    m_CustomPlot->xAxis->setRange(lastPointKey, 10, Qt::AlignRight); // means there a 10 sec
-    m_CustomPlot->yAxis->rescale();
-    m_CustomPlot->yAxis->scaleRange(1.1);
-  }
-  m_CustomPlot->replot();
-  //m_CustomPlot->rescaleAxes();
-  //m_CustomPlot->yAxis->scaleRange(1.05, m_CustomPlot->yAxis->range().center());
-  //m_CustomPlot->graph(0)->rescaleValueAxis(false);
-  //m_CustomPlot->yAxis->scaleRange(1.1, m_CustomPlot->yAxis->range().center());
+    static double lastPointKey = 0;
+    m_CustomPlot->graph(0)->setData(x, y);
+    lastPointKey = x.last();
+    if(rescalingON){
+        m_CustomPlot->xAxis->setRange(lastPointKey, 10, Qt::AlignRight); // means there a 10 sec
+        m_CustomPlot->yAxis->rescale();
+        if(y.last() != 0)
+            m_CustomPlot->yAxis->scaleRange(1.1);
+    }
+    m_CustomPlot->replot();
+    //m_CustomPlot->rescaleAxes();
+    //m_CustomPlot->yAxis->scaleRange(1.05, m_CustomPlot->yAxis->range().center());
+    //m_CustomPlot->graph(0)->rescaleValueAxis(false);
+    //m_CustomPlot->yAxis->scaleRange(1.1, m_CustomPlot->yAxis->range().center());
 }
 
 void CustomPlotItem::graphClicked(QCPAbstractPlottable *plottable) {
-  qDebug() << Q_FUNC_INFO
-           << QString("Clicked on graph '%1 ").arg(plottable->name());
+    qDebug() << Q_FUNC_INFO
+            << QString("Clicked on graph '%1 ").arg(plottable->name());
 }
 
 void CustomPlotItem::resetPos(){
-  rescalingON = true;
+    rescalingON = true;
 }
 
 void CustomPlotItem::routeMouseEvents(QMouseEvent *event) {
-  if (m_CustomPlot) {
-    QMouseEvent *newEvent =
-        new QMouseEvent(event->type(), event->localPos(), event->button(),
-                        event->buttons(), event->modifiers());
-    QCoreApplication::postEvent(m_CustomPlot, newEvent);
-  }
+    if (m_CustomPlot) {
+        QMouseEvent *newEvent =
+            new QMouseEvent(event->type(), event->localPos(), event->button(),
+                            event->buttons(), event->modifiers());
+        QCoreApplication::postEvent(m_CustomPlot, newEvent);
+    }
 }
 
 void CustomPlotItem::routeWheelEvents(QWheelEvent *event) {
-  if (m_CustomPlot) {
-    QWheelEvent *newEvent = new QWheelEvent(
-        event->position(), event->globalPosition(), event->pixelDelta(),
-        event->angleDelta(), event->buttons(), event->modifiers(),
-        event->phase(), event->inverted());
-    QCoreApplication::postEvent(m_CustomPlot, newEvent);
-  }
+    if (m_CustomPlot) {
+        QWheelEvent *newEvent = new QWheelEvent(
+            event->position(), event->globalPosition(), event->pixelDelta(),
+            event->angleDelta(), event->buttons(), event->modifiers(),
+            event->phase(), event->inverted());
+        QCoreApplication::postEvent(m_CustomPlot, newEvent);
+    }
 }
 
 void CustomPlotItem::updateCustomPlotSize() {
-  if (m_CustomPlot) {
-    m_CustomPlot->setGeometry(0, 0, (int)width(), (int)height());
-    m_CustomPlot->setViewport(QRect(0, 0, (int)width(), (int)height()));
-  }
+    if (m_CustomPlot) {
+        m_CustomPlot->setGeometry(0, 0, (int)width(), (int)height());
+        m_CustomPlot->setViewport(QRect(0, 0, (int)width(), (int)height()));
+    }
 }
 
 void CustomPlotItem::onCustomReplot() {
-  update();
+    update();
 }

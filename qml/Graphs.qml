@@ -34,7 +34,10 @@ Item{
             //     target: flowBack  
             //     function onPointsChanged(x,y) { customPlotFlow.backendData(x, y) }
             // }
-            
+            function passValues(x, y){
+                customPlotFlow.backendData(x, y)
+            }
+
             RoundButton {
                 id: resetPosBtn
                 width: 40
@@ -117,9 +120,15 @@ Item{
                 //     console.log("No flow connected (Graph)")
                 //     return
                 // }
-                // let flow = plotFlow.createObject()
-                // baseContainer.append(flow)
+                let flow = plotFlow.createObject()
+                baseContainer.append(flow)
             }
+        }
+    }
+    Connections{
+        target: dataSource
+        function onPointsFlowChanged(x, y){
+            baseContainer.get(0).passValues(x, y)            
         }
     }
     function detachFlow(){
