@@ -61,21 +61,36 @@ ApplicationWindow {
                     }
                 }
                 Item{
-                    SettingsDialog{
-                        id: profileObj
+                    RowLayout{
+                        SettingsDialog{
+                            id: flowObj
+                            innerPurpose: "flow"
+                        }
+                        SettingsDialog{
+                            id: valveObj
+                            innerPurpose: "valve"
+                        }
                     }
                     function setAdvantechController(){
-                        profileObj.setSettings()
+                        flowObj.setSettings()
+                        valveObj.setSettings()
                     }
-                    function saveAdvantechController(){
-                        let description = profileObj.innerName
-                        let purpose = profileObj.innerPurpose
-                        let settings = profileObj.getSettings()
-                        dataSource.advantechDeviceSetting(description, settings)
+                    function saveFlow(){
+                        let description = flowObj.innerName
+                        let purpose = flowObj.innerPurpose
+                        let settings = flowObj.getSettings()
+                        dataSource.flowSetting(description, settings)
+                    }
+                    function saveValve(){
+                        let description = valveObj.innerName
+                        let purpose = valveObj.innerPurpose
+                        let settings = valveObj.getSettings()
+                        dataSource.valveSetting(description, settings)
                     }
                     Component.onCompleted: {
                         setAdvantechController()
-                        saveAdvantechController()
+                        saveFlow()
+                        saveValve()
                     }
                 }
             }

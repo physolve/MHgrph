@@ -11,14 +11,15 @@ Rectangle {
     color: "transparent"
     border.color : "steelblue" 
     border.width : 8
-    property string text: "Flow meter"
+     
+    required property string innerPurpose
+    property string text: innerPurpose == "flow" ? "Flow meter" : "Valve"
     property string innerName: "" 
     property string innerProfile: "" 
-    property string innerPurpose: ""
     property int channelCount: 8
-    property int startChannel: 1
+    property int startChannel: 0
     property var valueRange: ""
-    property int defaultType: 5
+    property int defaultType: 6 
     Column{
         Text{
             id: customBackText
@@ -106,9 +107,9 @@ Rectangle {
             //onCurrentIndexChanged:
         }
         Switch{
-            id: readingBtn
-            text: qsTr("Start Read")
-            onToggled: backend.onReadButtonClicked(readingBtn.checked)   
+            id: switchBtn
+            text: innerPurpose == "flow" ? qsTr("Start Read") : qsTr("Open Valve") 
+            onToggled: innerPurpose == "flow" ? backend.onReadButtonClicked(switchBtn.checked) : backend.onValveButtonClicked(switchBtn.checked)   
         }
 
         anchors.centerIn: parent
@@ -121,11 +122,12 @@ Rectangle {
             if(value != "USB-4716")
                 continue
             customBack.innerName = value+','+key
-            customBack.innerPurpose = "flow"
+            //customBack.innerPurpose = "flow"
             customBack.color = Material.color(Material.Green)
 
-            let settings = initSource.advantechDeviceFill(value+','+key)
+            let settingsBi = initSource.advantechDeviceFill(value+','+key)
 
+            let settings = settingsBi[customBack.innerPurpose]
             customBack.channelCount = settings.channelCount
             cmbChannelCount.currentIndex = customBack.startChannel
             customBack.valueRange = settings.valueRanges

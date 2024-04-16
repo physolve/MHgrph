@@ -130,3 +130,114 @@ const QVector<double> AdvantechAI::getData(){ // const & ?
 	//vector=scaledData;
 	return m_vector;
 }
+
+/* Advantech Analog Output (control of the valve up to 5V (10V?)) */
+
+AdvantechAO::AdvantechAO(const AdvAIType &info, QObject *parent) :
+	AdvantechCtrl(info.m_deviceName,parent), m_info(info), m_instantAoCtrl(NULL)
+{
+}
+
+AdvantechAO::~AdvantechAO(){
+    qDebug() << QString("Oh no, %1 was deleted").arg(m_info.m_deviceName);
+}
+
+void AdvantechAO::Initialization()
+{
+    std::wstring description = m_info.m_deviceName.toStdWString();
+    DeviceInformation selected(description.c_str());
+
+    InstantAoCtrl *instantAoCtrl = InstantAoCtrl::Create();
+	ErrorCode errorCode = instantAoCtrl->setSelectedDevice(selected);
+
+	if (errorCode != 0){
+		QString str;
+        QString des = QString::fromStdWString(description);
+		return;
+	}
+
+	int channelCount = (instantAoCtrl->getChannelCount() < 2) ? 
+		instantAoCtrl->getChannelCount() : 2;
+
+	int logicChannelCount = instantAoCtrl->getChannelCount();
+
+	m_info.m_channelStart = logicChannelCount;
+
+	m_info.m_channelCount = channelCount;
+
+	Array<ValueRange>* ValueRanges = instantAoCtrl->getFeatures()->getValueRanges();
+	wchar_t		 vrgDescription[128];
+	MathInterval ranges;
+	for (int i = 0; i < ValueRanges->getCount(); i++)
+	{
+		errorCode = AdxGetValueRangeInformation(ValueRanges->getItem(i), 
+			sizeof(vrgDescription), vrgDescription, &ranges, NULL);
+		CheckError(errorCode);
+		QString str = QString::fromWCharArray(vrgDescription);
+		m_info.m_valueRanges.append(str);
+	}
+
+	instantAoCtrl->Dispose();
+}
+
+
+const AdvAIType& AdvantechAO::getInfo(){
+	return m_info;
+}
+
+void AdvantechAO::ConfigureDeviceTest(){ // after accept
+
+	if (m_instantAoCtrl==NULL)
+	{
+      m_instantAoCtrl = InstantAoCtrl::Create();
+	}
+
+    std::wstring description = m_info.m_deviceName.toStdWString();
+    DeviceInformation selected(description.c_str());
+
+    ErrorCode errorCode = m_instantAoCtrl->setSelectedDevice(selected);
+	CheckError(errorCode);
+	// add DIR ? profile
+    std::wstring profile = m_info.m_profilePath.toStdWString();
+    errorCode = m_instantAoCtrl->LoadProfile(profile.c_str());
+    CheckError(errorCode);
+
+	//Get channel max number. set value range for every channel.
+	Array<AoChannel> *channels = m_instantAoCtrl->getChannels();
+
+	Array<ValueRange>* valueRanges = m_instantAoCtrl->getFeatures()->getValueRanges();
+	m_valueRange = valueRanges->getItem(m_info.m_valueRangeCh);
+	
+	for (int i = 0; i < channels->getCount(); i++)
+	{
+		channels->getItem(i).setValueRange(m_valueRange);
+	}
+
+	qDebug() << "INFO COUNT " << channels->getCount();
+}
+
+void AdvantechAO::CheckError(ErrorCode errorCode)
+{
+    if (BioFailed(errorCode))
+	{
+		QString message = tr("Sorry, there are some errors occurred, Error Code: 0x") +
+			QString::number(errorCode, 16).right(8).toUpper();
+		qDebug() << QString("Warning Information %1").arg(message);
+	}
+}
+
+void AdvantechAO::setData(bool state){
+	ErrorCode errorCode = Success;
+	
+	double voltageSet = 0.0; // V
+
+	if(state) voltageSet = 5.0;
+	
+	errorCode = m_instantAoCtrl->Write(m_info.m_channelStart, voltageSet);
+
+	CheckError(errorCode);
+	if (errorCode != Success)
+	{
+		return;
+	}
+}

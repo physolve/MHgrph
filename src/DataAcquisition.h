@@ -30,18 +30,22 @@ class DataAcquisition : public QObject
     Q_OBJECT
 public:
     explicit DataAcquisition(QObject *parent = 0);
-    Q_INVOKABLE void advantechDeviceSetting(const QString &description, const QVariantMap& deviceSettings);
+    Q_INVOKABLE void flowSetting(const QString &description, const QVariantMap& deviceSettings);
+    Q_INVOKABLE void valveSetting(const QString &description, const QVariantMap& deviceSettings);
     //QVariantMap profileJson ();
     bool isFlowConnected();
     void startReading();
     void stopReading();
     void processEvents(); // wierdly written
     double getLastChanged();
+    void openValve();
+    void closeValve();
 signals:
     void pointsFlowChanged(const QList<quint64> &x, const QList<double> &y);
 private:
     const double filterData_flow(double voltage);
     AdvantechAI* m_flowMeter;
+    AdvantechAO* m_flowValve;
     Data m_flow;
     QTimer* m_timer;
     QElapsedTimer m_timePassed;

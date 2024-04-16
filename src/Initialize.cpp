@@ -50,6 +50,11 @@ QVariantMap Initialize::advantechDeviceFill(const QString &description){
     auto demoFlow = AdvantechAI(a);
     demoFlow.Initialization();
     a = demoFlow.getInfo();
-    advantechDeviceSettings = a.getSettings();
+    advantechDeviceSettings["flow"] = a.getSettings();
+    auto demoValve = AdvantechAO(a);
+    demoValve.Initialization();
+    a = demoValve.getInfo();
+    advantechDeviceSettings["valve"] = a.getSettings();
+    
     return advantechDeviceSettings;
 }

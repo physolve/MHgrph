@@ -26,4 +26,18 @@ public:
     int m_valueRangeCh;
 };
 
+// class AdvAOType: public ControllerInfo {
+// public:
+//     AdvAOType() = default;
+//     AdvAOType(QString deviceName);
+//     QVariantMap getSettings();
+//     void setSettings(const QVariantMap& info);
+//     int m_channelCount; // share to qml
+// 	int m_channelStart;
+// 	QStringList m_valueRanges;
+//     QString m_profilePath;
+//     // optional int pointCountPerWave
+//     int m_valueRangeCh;
+// };
+
 Q_DECLARE_METATYPE(ControllerInfo)

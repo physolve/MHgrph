@@ -7,12 +7,19 @@ DataAcquisition::DataAcquisition(QObject *parent) :
     connect(m_timer, &QTimer::timeout, this, &DataAcquisition::processEvents);
 }
 
-void DataAcquisition::advantechDeviceSetting(const QString &description, const QVariantMap& deviceSettings){
+void DataAcquisition::flowSetting(const QString &description, const QVariantMap& deviceSettings){
     AdvAIType a(description);
     a.setSettings(deviceSettings);
     m_flowMeter = new AdvantechAI(a);
     m_flowMeter->ConfigureDeviceTest();
     qDebug() << "Created flowMeter";
+}
+void DataAcquisition::valveSetting(const QString &description, const QVariantMap& deviceSettings){
+    AdvAIType a(description);
+    a.setSettings(deviceSettings);
+    m_flowValve = new AdvantechAO(a);
+    m_flowValve->ConfigureDeviceTest();
+    qDebug() << "Created Valve";
 }
 
 bool DataAcquisition::isFlowConnected(){
@@ -43,7 +50,7 @@ void DataAcquisition::processEvents(){
 }
 
 const double DataAcquisition::filterData_flow(double voltage){
-    double point = 1 * voltage - 0;
+    double point = 10 * voltage - 0; // range [0 - 5] V = [0 - 50] SLM H_2 -> 1V = 10 SLM H2
     return point;
 } 
 
@@ -51,3 +58,9 @@ double DataAcquisition::getLastChanged(){
     return m_flow.y.last();
 }
 
+void DataAcquisition::openValve(){
+    m_flowValve->setData(true);
+}
+void DataAcquisition::closeValve(){
+    m_flowValve->setData(false);
+}

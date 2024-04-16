@@ -22,6 +22,7 @@ public:
     //void initController();
     //Q_INVOKABLE void onConnectButtonClicked();
     Q_INVOKABLE void onReadButtonClicked(bool s);
+    Q_INVOKABLE void onValveButtonClicked(bool s);
 signals:
     void logChanged(QString);
     

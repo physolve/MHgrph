@@ -62,6 +62,15 @@ void MainWindow::processEvents(){
     m_writeLog.writeLine(line);
 }
 
+void MainWindow::onValveButtonClicked(bool s){
+    if(s){
+        dataSource.openValve();
+    }
+    else{
+        dataSource.closeValve();
+    }
+}
+
 void MainWindow::setLogText(const QString &text){
     if (text != logText)
     {

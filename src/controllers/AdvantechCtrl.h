@@ -48,3 +48,24 @@ private:
     QVector<double> m_vector;
 	//double scaledData[16];
 };
+
+class AdvantechAO : public AdvantechCtrl
+{
+    Q_OBJECT
+public:
+    AdvantechAO(const AdvAIType &info, QObject *parent = nullptr);
+    virtual ~AdvantechAO();
+    void Initialization() ; //override
+    void initialInfo();
+    void ConfigureDeviceTest();
+	void CheckError(ErrorCode errorCode);
+    const AdvAIType& getInfo(); // move to base class
+    void setData(bool state);
+private:
+    AdvAIType m_info;
+    
+    ValueRange m_valueRange;
+    InstantAoCtrl* m_instantAoCtrl; // change to smart pointer or initialize inside class 
+    
+    //double m_cVoltage;
+};
