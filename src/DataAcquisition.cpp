@@ -8,6 +8,8 @@ DataAcquisition::DataAcquisition(QObject *parent) :
 }
 
 void DataAcquisition::flowSetting(const QString &description, const QVariantMap& deviceSettings){
+    if(description.isEmpty())
+        return;
     AdvAIType a(description);
     a.setSettings(deviceSettings);
     m_flowMeter = new AdvantechAI(a);
@@ -15,6 +17,8 @@ void DataAcquisition::flowSetting(const QString &description, const QVariantMap&
     qDebug() << "Created flowMeter";
 }
 void DataAcquisition::valveSetting(const QString &description, const QVariantMap& deviceSettings){
+    if(description.isEmpty())
+        return; //
     AdvAIType a(description);
     a.setSettings(deviceSettings);
     m_flowValve = new AdvantechAO(a);
@@ -29,6 +33,8 @@ bool DataAcquisition::isFlowConnected(){
 
 void DataAcquisition::startReading(){
     //threshold = 0;
+    if(m_flowMeter==nullptr||m_flowValve==nullptr)
+        return;
     m_timer->start(1000);
     m_timePassed.start();
 }
