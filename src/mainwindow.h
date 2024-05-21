@@ -21,8 +21,8 @@ public:
     QString getLogText() const;
     //void initController();
     //Q_INVOKABLE void onConnectButtonClicked();
-    Q_INVOKABLE void onReadButtonClicked(bool s);
-    Q_INVOKABLE void onValveButtonClicked(bool s);
+    Q_INVOKABLE bool onReadButtonClicked(bool s);
+    Q_INVOKABLE bool onValveButtonClicked(bool s);
 signals:
     void logChanged(QString);
     

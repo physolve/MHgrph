@@ -46,12 +46,13 @@ MainWindow::~MainWindow()
     //delete m_settings;
 }
 
-void MainWindow::onReadButtonClicked(bool s)
+bool MainWindow::onReadButtonClicked(bool s)
 {
     if(!dataSource.isFlowConnected())
-        return;
+        return false;
     if(s) dataSource.startReading();
     else dataSource.stopReading();
+    return true;
 }
 
 void MainWindow::processEvents(){
@@ -62,13 +63,16 @@ void MainWindow::processEvents(){
     m_writeLog.writeLine(line);
 }
 
-void MainWindow::onValveButtonClicked(bool s){
+bool MainWindow::onValveButtonClicked(bool s){
+    if(!dataSource.isFlowConnected())
+        return false;
     if(s){
         dataSource.openValve();
     }
     else{
         dataSource.closeValve();
     }
+    return true;
 }
 
 void MainWindow::setLogText(const QString &text){

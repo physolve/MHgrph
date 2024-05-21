@@ -4,6 +4,8 @@ import QtQuick.Controls
 import QtQml.Models
 import QtQuick.Layouts
 
+import Qt.labs.platform 1.1
+
 Rectangle {
     id: customBack
     implicitWidth: 250
@@ -13,6 +15,7 @@ Rectangle {
     border.width : 8
      
     required property string innerPurpose
+    property bool connected: false
     property string text: innerPurpose == "flow" ? "Flow meter" : "Valve"
     property string innerName: "" 
     property string innerProfile: "" 
@@ -109,14 +112,24 @@ Rectangle {
         Switch{
             id: switchBtn
             text: innerPurpose == "flow" ? qsTr("Start Read") : qsTr("Open Valve") 
-            onToggled: innerPurpose == "flow" ? backend.onReadButtonClicked(switchBtn.checked) : backend.onValveButtonClicked(switchBtn.checked)   
+            // toggle check with property connected
+            onToggled: if((innerPurpose == "flow" ? backend.onReadButtonClicked(switchBtn.checked) : backend.onValveButtonClicked(switchBtn.checked)) == false) errorMsg.open()   
         }
-
+        MessageDialog{
+            id: errorMsg
+            buttons: MessageDialog.Ok
+            text: "Проверь подключение контроллера"
+        }
         anchors.centerIn: parent
     }
     //anchors.centerIn: parent
-    function setSettings(){
+    function setSettings(){ // if no one show, 
         let rsa = initSource.advantechDeviceMap
+
+        // let connectCheck = Object.keys(rsa).find(key => rsa[key] === "USB-4716")
+        console.log(Object.values(rsa).includes("USB-4716"))
+
+
         for(const [key, value] of Object.entries(rsa)){
             console.log(`I see ${key} and ${value}.`)
             if(value != "USB-4716")
@@ -124,7 +137,7 @@ Rectangle {
             customBack.innerName = value+','+key
             //customBack.innerPurpose = "flow"
             customBack.color = Material.color(Material.Green)
-
+            customBack.connected = true
             let settingsBi = initSource.advantechDeviceFill(value+','+key)
 
             let settings = settingsBi[customBack.innerPurpose]

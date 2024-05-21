@@ -1,7 +1,7 @@
 #include "DataAcquisition.h"
 
 DataAcquisition::DataAcquisition(QObject *parent) :
-    QObject(parent), m_timer(new QTimer), m_flow("flow",{0},{0})
+    QObject(parent), m_timer(new QTimer), m_flow("flow",{0},{0}), m_flowMeter(nullptr), m_flowValve(nullptr)
 {
     //GRAMsIntegrity["pressure"] = ControllerConnection::Offline;
     connect(m_timer, &QTimer::timeout, this, &DataAcquisition::processEvents);
