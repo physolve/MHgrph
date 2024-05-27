@@ -37,6 +37,8 @@ MainWindow::MainWindow(int &argc, char **argv)
     connect(m_logTimer, &QTimer::timeout, this, &MainWindow::processEvents);
 
     m_programTime.start();
+
+    m_logTimer->start(1000);
 }
 
 MainWindow::~MainWindow()

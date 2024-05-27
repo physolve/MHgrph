@@ -11,6 +11,8 @@ struct Data {
     void clearPoints(){
         x.clear();
         y.clear();
+        x.append(0);
+        y.append(0);
     }
     void addPoint(const quint64 &val_x, const double &val_y){
         if(x.count() > 120){
