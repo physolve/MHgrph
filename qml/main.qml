@@ -20,12 +20,9 @@ ApplicationWindow {
     SplitView {
         id: grid
         anchors.fill: parent
-        //columnSpacing: 1
-        //flow: GridLayout.LeftToRight
-        //columns: 2
         Item {
             implicitWidth:  800
-            SplitView.minimumWidth: 700
+            SplitView.minimumWidth: 750
             // width: 700
             // height: parent.height
             Graphs{

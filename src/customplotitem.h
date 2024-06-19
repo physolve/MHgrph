@@ -33,7 +33,7 @@ private:
   bool rescalingON;
 
 public slots:
-  void backendData(QList<double> x, QList<double> y);
+  void backendData(const QList<double> &x, const QList<double> &y);
 
 private slots:
   void graphClicked(QCPAbstractPlottable *plottable);

@@ -29,6 +29,7 @@ MainWindow::MainWindow(int &argc, char **argv)
     m_engine.rootContext()->setContextProperty("backend", this);
     m_engine.rootContext()->setContextProperty("initSource", &initSource);
     m_engine.rootContext()->setContextProperty("dataSource", &dataSource);
+    m_engine.rootContext()->setContextProperty("flowToVolume", dataSource.getScalarCalcObject());
 
     setLogText("Click connect");
     
@@ -63,6 +64,9 @@ void MainWindow::processEvents(){
     
     QString line = QString("%1\t%2").arg(c_time).arg(c_flow);
     m_writeLog.writeLine(line);
+
+    auto currentFlowString = QString::fromUtf8("Текущий поток: %1 норм. л./мин").arg(c_flow);
+    setLogText(currentFlowString);
 }
 
 bool MainWindow::onValveButtonClicked(bool s){
@@ -81,7 +85,7 @@ void MainWindow::setLogText(const QString &text){
     if (text != logText)
     {
         logText = text;
-        emit logChanged(text);
+        emit logChanged();
     }
 }
 

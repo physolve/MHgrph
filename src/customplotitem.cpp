@@ -139,21 +139,15 @@ void CustomPlotItem::wheelEvent(QWheelEvent *event) {
     routeWheelEvents(event); 
 }
 
-void CustomPlotItem::backendData(QList<double> x, QList<double> y){
-    static double lastPointKey = 0;
+void CustomPlotItem::backendData(const QList<double> &x, const QList<double> &y){
+    qreal lastPointKey = 0;
     m_CustomPlot->graph(0)->setData(x, y);
     lastPointKey = x.last();
     if(rescalingON){
         m_CustomPlot->xAxis->setRange(lastPointKey, 10, Qt::AlignRight); // means there a 10 sec
         m_CustomPlot->yAxis->rescale();
-        if(y.last() != 0)
-            m_CustomPlot->yAxis->scaleRange(1.1);
     }
     m_CustomPlot->replot();
-    //m_CustomPlot->rescaleAxes();
-    //m_CustomPlot->yAxis->scaleRange(1.05, m_CustomPlot->yAxis->range().center());
-    //m_CustomPlot->graph(0)->rescaleValueAxis(false);
-    //m_CustomPlot->yAxis->scaleRange(1.1, m_CustomPlot->yAxis->range().center());
 }
 
 void CustomPlotItem::graphClicked(QCPAbstractPlottable *plottable) {
@@ -181,6 +175,7 @@ void CustomPlotItem::routeWheelEvents(QWheelEvent *event) {
             event->angleDelta(), event->buttons(), event->modifiers(),
             event->phase(), event->inverted());
         QCoreApplication::postEvent(m_CustomPlot, newEvent);
+        m_CustomPlot->yAxis->rescale(true); 
     }
 }
 

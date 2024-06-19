@@ -23,8 +23,9 @@ public:
     //Q_INVOKABLE void onConnectButtonClicked();
     Q_INVOKABLE bool onReadButtonClicked(bool s);
     Q_INVOKABLE bool onValveButtonClicked(bool s);
+    
 signals:
-    void logChanged(QString);
+    void logChanged();
     
 private slots:
     void setLogText(const QString &text);

@@ -3,6 +3,7 @@
 #include <QElapsedTimer>
 #include <QTimer>
 #include "controllers/AdvantechCtrl.h"
+#include "scalarcalc.h"
 
 struct Data {
     Data() {}
@@ -34,6 +35,8 @@ public:
     explicit DataAcquisition(QObject *parent = 0);
     Q_INVOKABLE void flowSetting(const QString &description, const QVariantMap& deviceSettings);
     Q_INVOKABLE void valveSetting(const QString &description, const QVariantMap& deviceSettings);
+    ScalarCalc* getScalarCalcObject();
+    //Q_INVOKABLE void onTestClicked();
     //QVariantMap profileJson ();
     bool isFlowConnected();
     void startReading();
@@ -42,6 +45,7 @@ public:
     double getLastChanged();
     void openValve();
     void closeValve();
+
 signals:
     void pointsFlowChanged(const QList<quint64> &x, const QList<double> &y);
 private:
@@ -51,4 +55,5 @@ private:
     Data m_flow;
     QTimer* m_timer;
     QElapsedTimer m_timePassed;
+    ScalarCalc flowToVolume;
 };

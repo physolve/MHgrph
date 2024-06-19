@@ -12,11 +12,13 @@ Item{
     Component{
         id: plotFlow
         Item {
-            width: 600
-            height: 400
+            width: 700
+            height: 500
             CustomPlotItem {
                 id: customPlotFlow
                 width: parent.width;  height: parent.height-50 // resize
+                anchors.leftMargin: 20
+                anchors.topMargin: 20
                 //width: 600
                 //height: 400
                 anchors.left: parent.left; anchors.top: parent.top
@@ -43,6 +45,8 @@ Item{
                 width: 40
                 height: 40
                 anchors.left: parent.left; anchors.top: customPlotFlow.bottom
+                anchors.topMargin: 5
+                anchors.leftMargin: 20
                 text: "⟳"
                 font.pixelSize: 18
                 //Material.background: Material.Red
@@ -54,6 +58,8 @@ Item{
                 width: 40
                 height: 40
                 anchors.left: resetPosBtn.right; anchors.top: customPlotFlow.bottom
+                anchors.topMargin: 5
+                anchors.leftMargin: 5
                 text: "㍴"
                 font.pixelSize: 18
                 font.bold: true
@@ -67,6 +73,8 @@ Item{
                 width: 40
                 height: 40
                 anchors.left: changeUnitBtn.right; anchors.top: customPlotFlow.bottom
+                anchors.topMargin: 5
+                anchors.leftMargin: 5
                 text: "W"
                 font.pixelSize: 18
                 font.bold: true
@@ -97,8 +105,8 @@ Item{
         }
         StackLayout {
             id: layoutGraph
-            width: 600
-            height: 400
+            width: 700
+            height: 500
             currentIndex: barGraph.currentIndex
             Repeater {
                 model: baseContainer

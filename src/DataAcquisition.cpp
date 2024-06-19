@@ -1,7 +1,7 @@
 #include "DataAcquisition.h"
 
 DataAcquisition::DataAcquisition(QObject *parent) :
-    QObject(parent), m_timer(new QTimer), m_flow("flow",{0},{0}), m_flowMeter(nullptr), m_flowValve(nullptr)
+    QObject(parent), m_timer(new QTimer), m_flow("flow",{0},{0}), m_flowMeter(nullptr), m_flowValve(nullptr), flowToVolume()
 {
     //GRAMsIntegrity["pressure"] = ControllerConnection::Offline;
     connect(m_timer, &QTimer::timeout, this, &DataAcquisition::processEvents);
@@ -50,8 +50,11 @@ void DataAcquisition::processEvents(){
 
     auto voltageFlow = m_flowMeter->getData().at(0);
     auto point_flow = filterData_flow(voltageFlow);
-    m_flow.addPoint(m_timePassed.elapsed()/1000, point_flow);
-
+    auto point_time = m_timePassed.elapsed()/1000;
+    if(flowToVolume.isExposure){
+        flowToVolume.calcScalar(m_flow.y.last(), point_flow, m_flow.x.last(), point_time);
+    }
+    m_flow.addPoint(point_time, point_flow);
     emit pointsFlowChanged(m_flow.x, m_flow.y);
 }
 
@@ -69,4 +72,8 @@ void DataAcquisition::openValve(){
 }
 void DataAcquisition::closeValve(){
     m_flowValve->setData(false);
+}
+
+ScalarCalc* DataAcquisition::getScalarCalcObject(){
+    return &flowToVolume;
 }
